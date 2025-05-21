@@ -1,0 +1,54 @@
+changes:
+
+
+in index.html file add this script
+
+ <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.1.4/dist/mindar-image-three.prod.js"></script>
+
+in ar-viewer component add this function:
+
+declare const window: any;
+
+ ngAfterViewInit() {
+    setTimeout(() => {
+      const mindarGlobal = (window as any).MINDAR;
+      if (!mindarGlobal || !mindarGlobal.IMAGE) {
+        console.error('MindAR is not loaded properly!');
+        return;
+      }
+  
+      const MindARThree = mindarGlobal.IMAGE.MindARThree;
+  
+      const mindarThree = new MindARThree({
+        container: document.querySelector("#ar-container"),
+        imageTargetSrc: 'assets/targets/your-target.mind'
+      });
+  
+      const { renderer, scene, camera } = mindarThree;
+  
+      const anchor = mindarThree.addAnchor(0);
+      const geometry = new THREE.BoxGeometry(0.5, 0.5, 0.5);
+      const material = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+      const cube = new THREE.Mesh(geometry, material);
+  
+      anchor.group.add(cube);
+  
+      mindarThree.start();
+      renderer.setAnimationLoop(() => {
+        renderer.render(scene, camera);
+      });
+    }, 1000); // delay to ensure script loads
+  }
+
+
+in ar-viewer.html add this tag:
+<div id="ar-container"></div>
+
+in ar-viewer.scss add this styling:
+#ar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+  }
